@@ -18,7 +18,7 @@ impl TryFrom<&str> for Move {
             "A" | "X" => Ok(Move::Rock),
             "B" | "Y" => Ok(Move::Paper),
             "C" | "Z" => Ok(Move::Scissors),
-            _ => Err(InvalidMove {})
+            _ => Err(Self::Error {})
         }
     }
 }
@@ -29,28 +29,38 @@ enum RoundResult {
     Draw
 }
 
-fn round_result(opponent_move: Move, predicted_move: Move) -> RoundResult {
-    if opponent_move == predicted_move {
-        return RoundResult::Draw;
-    } else if opponent_move == Move::Rock {
-        if predicted_move == Move::Paper {
-            RoundResult::Win
-        } else {
-            RoundResult::Loss
-        }
-    } else if opponent_move == Move::Paper {
-        if predicted_move == Move::Rock {
-            RoundResult::Loss
-        } else {
-            RoundResult::Win
-        }
-    } else {
-        if predicted_move == Move::Rock {
-            RoundResult::Win
-        } else {
-            RoundResult::Loss
+#[derive(Debug)]
+struct InvalidResult;
+
+impl TryFrom<&str> for RoundResult {
+    type Error = InvalidResult;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "X" => Ok(RoundResult::Loss),
+            "Y" => Ok(RoundResult::Draw),
+            "Z" => Ok(RoundResult::Win),
+            _ => Err(Self::Error {})
         }
     }
+}
+
+fn calculate_score(used_move: Move, round_result: RoundResult) -> u32 {
+    let mut score = 0;
+
+    score += match round_result {
+        RoundResult::Win => 6,
+        RoundResult::Loss => 0,
+        RoundResult::Draw => 3,
+    };
+
+    score += match used_move {
+        Move::Rock => 1,
+        Move::Paper => 2,
+        Move::Scissors => 3,
+    };
+
+    score
 }
 
 pub fn part_one(input: &str) -> Option<u32> {
@@ -61,26 +71,60 @@ pub fn part_one(input: &str) -> Option<u32> {
         let opponent_move = Move::try_from(split[0]).expect("Invalid opponent move");
         let predicted_move = Move::try_from(split[1]).expect("Invalid prediciton");
 
-        let round_result = round_result(opponent_move.clone(), predicted_move.clone());
-
-        score += match round_result {
-            RoundResult::Win => 6,
-            RoundResult::Loss => 0,
-            RoundResult::Draw => 3,
+        let round_result = match opponent_move {
+            Move::Rock => match predicted_move {
+                Move::Rock => RoundResult::Draw,
+                Move::Paper => RoundResult::Win,
+                Move::Scissors => RoundResult::Loss,
+            },
+            Move::Paper => match predicted_move {
+                Move::Rock => RoundResult::Loss,
+                Move::Paper => RoundResult::Draw,
+                Move::Scissors => RoundResult::Win,
+            },
+            Move::Scissors => match predicted_move {
+                Move::Rock => RoundResult::Win,
+                Move::Paper => RoundResult::Loss,
+                Move::Scissors => RoundResult::Draw,
+            },
         };
 
-        score += match predicted_move {
-            Move::Rock => 1,
-            Move::Paper => 2,
-            Move::Scissors => 3,
-        };
+        score += calculate_score(predicted_move, round_result);
     }
 
     Some(score)
 }
 
-pub fn part_two(_input: &str) -> Option<u32> {
-    None
+pub fn part_two(input: &str) -> Option<u32> {
+    let mut score = 0u32;
+
+    for line in input.lines() {
+        let split = line.split(" ").collect::<Vec<_>>();
+        let opponent_move = Move::try_from(split[0]).expect("Invalid opponent move");
+        let expected_result = RoundResult::try_from(split[1]).expect("Invalid expected result");
+
+        let predicted_move = match expected_result {
+            RoundResult::Win => match opponent_move {
+                Move::Rock => Move::Paper,
+                Move::Paper => Move::Scissors,
+                Move::Scissors => Move::Rock,
+            },
+            RoundResult::Loss => match opponent_move {
+                Move::Rock => Move::Scissors,
+                Move::Paper => Move::Rock,
+                Move::Scissors => Move::Paper,
+            },
+            RoundResult::Draw => match opponent_move {
+                Move::Rock => Move::Rock,
+                Move::Paper => Move::Paper,
+                Move::Scissors => Move::Scissors,
+            },
+        };
+
+        score += calculate_score(predicted_move, expected_result);
+    }
+
+    Some(score)
 }
 
 fn main() {
@@ -102,6 +146,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 2);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some(12));
     }
 }
