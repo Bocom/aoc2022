@@ -4,7 +4,7 @@ use std::convert::TryFrom;
 enum Move {
     Rock,
     Paper,
-    Scissors
+    Scissors,
 }
 
 #[derive(Debug)]
@@ -18,7 +18,7 @@ impl TryFrom<&str> for Move {
             "A" | "X" => Ok(Move::Rock),
             "B" | "Y" => Ok(Move::Paper),
             "C" | "Z" => Ok(Move::Scissors),
-            _ => Err(Self::Error {})
+            _ => Err(Self::Error {}),
         }
     }
 }
@@ -26,7 +26,7 @@ impl TryFrom<&str> for Move {
 enum RoundResult {
     Win,
     Loss,
-    Draw
+    Draw,
 }
 
 #[derive(Debug)]
@@ -40,7 +40,7 @@ impl TryFrom<&str> for RoundResult {
             "X" => Ok(RoundResult::Loss),
             "Y" => Ok(RoundResult::Draw),
             "Z" => Ok(RoundResult::Win),
-            _ => Err(Self::Error {})
+            _ => Err(Self::Error {}),
         }
     }
 }

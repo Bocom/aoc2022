@@ -27,10 +27,7 @@ pub fn part_one(input: &str) -> Option<u32> {
 pub fn part_two(input: &str) -> Option<u32> {
     let mut elves = count_calories(input);
     elves.sort();
-    let top_three = elves
-        .iter()
-        .rev()
-        .take(3);
+    let top_three = elves.iter().rev().take(3);
 
     Some(top_three.sum())
 }
