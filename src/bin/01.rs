@@ -1,6 +1,7 @@
-pub fn part_one(input: &str) -> Option<u32> {
-    let mut current_acc: u32 = 0;
+fn count_calories(input: &str) -> Vec<u32> {
     let mut elves = Vec::<u32>::new();
+    let mut current_acc: u32 = 0;
+
     for line in input.lines() {
         if line.is_empty() {
             elves.push(current_acc);
@@ -10,11 +11,28 @@ pub fn part_one(input: &str) -> Option<u32> {
 
         current_acc += line.parse::<u32>().expect("Encountered invalid number");
     }
+
+    if current_acc != 0 {
+        elves.push(current_acc);
+    }
+
+    elves
+}
+
+pub fn part_one(input: &str) -> Option<u32> {
+    let elves = count_calories(input);
     elves.into_iter().max()
 }
 
-pub fn part_two(_input: &str) -> Option<u32> {
-    None
+pub fn part_two(input: &str) -> Option<u32> {
+    let mut elves = count_calories(input);
+    elves.sort();
+    let top_three = elves
+        .iter()
+        .rev()
+        .take(3);
+
+    Some(top_three.sum())
 }
 
 fn main() {
@@ -36,6 +54,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 1);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some(45_000));
     }
 }
