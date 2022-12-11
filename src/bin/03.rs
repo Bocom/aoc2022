@@ -1,8 +1,8 @@
 fn calculate_priority(c: char) -> u32 {
     let base: u8 = if c.is_lowercase() {
-        'a' as u8
+        b'a'
     } else {
-        'A' as u8
+        b'A'
     };
     let num = (c as u8 - base) as u32;
 

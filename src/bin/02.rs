@@ -67,7 +67,7 @@ pub fn part_one(input: &str) -> Option<u32> {
     let mut score = 0u32;
 
     for line in input.lines() {
-        let split = line.split(" ").collect::<Vec<_>>();
+        let split = line.split(' ').collect::<Vec<_>>();
         let opponent_move = Move::try_from(split[0]).expect("Invalid opponent move");
         let predicted_move = Move::try_from(split[1]).expect("Invalid prediciton");
 
@@ -99,7 +99,7 @@ pub fn part_two(input: &str) -> Option<u32> {
     let mut score = 0u32;
 
     for line in input.lines() {
-        let split = line.split(" ").collect::<Vec<_>>();
+        let split = line.split(' ').collect::<Vec<_>>();
         let opponent_move = Move::try_from(split[0]).expect("Invalid opponent move");
         let expected_result = RoundResult::try_from(split[1]).expect("Invalid expected result");
 
