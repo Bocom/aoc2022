@@ -1,9 +1,5 @@
 fn calculate_priority(c: char) -> u32 {
-    let base: u8 = if c.is_lowercase() {
-        b'a'
-    } else {
-        b'A'
-    };
+    let base: u8 = if c.is_lowercase() { b'a' } else { b'A' };
     let num = (c as u8 - base) as u32;
 
     if c.is_lowercase() {
